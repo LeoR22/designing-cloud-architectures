@@ -13,13 +13,13 @@
     {"id": "crm", "label": "CRM", "service": "saas.crm", "group": "sources"},
     {"id": "sms", "label": "SMS gateway", "service": "saas.sms", "group": "sources"},
     {"id": "whatsapp", "label": "WhatsApp API", "service": "saas.whatsapp", "group": "sources"},
-    {"id": "aurora", "label": "Aurora", "service": "aws.aurora", "group": "sources"},
+    {"id": "aurora", "label": "Aurora", "service": "aws.aurora", "group": "sources", "stateful": true, "replicas": 2},
     {"id": "files", "label": "Batch files", "service": "generic.files", "group": "sources"},
 
     {"id": "appflow", "label": "AppFlow", "service": "aws.appflow", "group": "ingestion"},
     {"id": "kinesis", "label": "Kinesis Firehose", "service": "aws.kinesis", "group": "ingestion"},
     {"id": "dms", "label": "DMS", "service": "aws.dms", "group": "ingestion"},
-    {"id": "landing", "label": "S3 landing", "service": "aws.s3", "group": "ingestion"},
+    {"id": "landing", "label": "S3 landing", "service": "aws.s3", "group": "ingestion", "stateful": true, "self_healing": true},
 
     {"id": "bronze", "label": "Bronze (raw)", "service": "saas.databricks", "group": "lakehouse"},
     {"id": "silver", "label": "Silver (clean)", "service": "saas.databricks", "group": "lakehouse"},

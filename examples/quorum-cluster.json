@@ -1,0 +1,18 @@
+{
+  "name": "Quorum cluster example",
+  "provider": "aws",
+  "groups": [
+    {"id": "app", "label": "Application"},
+    {"id": "data", "label": "Consensus data"},
+    {"id": "recovery", "label": "Recovery"}
+  ],
+  "components": [
+    {"id": "api", "label": "API", "service": "aws.ecs", "group": "app"},
+    {"id": "store", "label": "Consensus store", "service": "aws.ec2", "group": "data", "stateful": true, "replicas": 5, "quorum": true},
+    {"id": "backup", "label": "AWS Backup", "service": "aws.backup", "group": "recovery"}
+  ],
+  "connections": [
+    {"from": "api", "to": "store", "label": "reads and writes"},
+    {"from": "store", "to": "backup", "label": "snapshots"}
+  ]
+}
