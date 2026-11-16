@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections import defaultdict
 
 from ..domain.models import Architecture
+from ._labels import replicas_suffix as _replicas_suffix
 
 
 def _esc(text: str) -> str:
@@ -23,7 +24,7 @@ class MermaidRenderer:
         for g in architecture.groups:
             lines.append(f'  subgraph g_{g.id}["{_esc(g.label)}"]')
             for c in by_group[g.id]:
-                lines.append(f'    n_{c.id}["{_esc(c.label)}<br/>{_esc(c.service)}"]')
+                lines.append(f'    n_{c.id}["{_esc(c.label)}<br/>{_esc(c.service)}{_replicas_suffix(c.replicas)}"]')
             lines.append("  end")
         for e in architecture.connections:
             arrow = f"-->|{_esc(e.label)}|" if e.label else "-->"

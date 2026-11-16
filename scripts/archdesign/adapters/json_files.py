@@ -46,6 +46,20 @@ def _items(obj: dict, key: str, where: str) -> list[dict]:
     return items
 
 
+def _flag(obj: dict, key: str, where: str) -> bool:
+    value = obj.get(key, False)
+    if not isinstance(value, bool):
+        raise SpecError(f"{where}: '{key}' must be true or false, got {value!r}.")
+    return value
+
+
+def _replicas(obj: dict, where: str) -> int:
+    value = obj.get("replicas", 1)
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise SpecError(f"{where}: 'replicas' must be an integer >= 1, got {value!r}.")
+    return value
+
+
 def _identifier(value: object, where: str) -> str:
     if not isinstance(value, str) or not ID_PATTERN.match(value):
         raise SpecError(f"{where}: id {value!r} must match {ID_PATTERN.pattern} (letters, digits, underscore).")
@@ -76,6 +90,10 @@ class JsonArchitectureSource:
                 str(_require(c, "label", where)),
                 str(_require(c, "service", where)),
                 str(_require(c, "group", where)),
+                _flag(c, "stateful", where),
+                _replicas(c, where),
+                _flag(c, "quorum", where),
+                _flag(c, "self_healing", where),
             ))
         connections = tuple(
             Connection(

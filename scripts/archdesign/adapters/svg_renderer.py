@@ -10,6 +10,7 @@ from collections import defaultdict
 from xml.sax.saxutils import escape
 
 from ..domain.models import Architecture, Component
+from ._labels import replicas_suffix as _replicas_suffix
 
 NODE_W, NODE_H = 150, 56
 COL_GAP, ROW_GAP = 70, 20
@@ -170,7 +171,7 @@ class SvgRenderer:
             )
             out.append(
                 f'<text x="{x + NODE_W // 2}" y="{yy + 42}" font-size="10" '
-                f'text-anchor="middle" fill="#5F6368">{escape(c.service)}</text>'
+                f'text-anchor="middle" fill="#5F6368">{escape(c.service)}{_replicas_suffix(c.replicas)}</text>'
             )
 
         out.append("</svg>")
