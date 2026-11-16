@@ -1,0 +1,17 @@
+{
+  "questions": [
+    {"id": "sec-01", "pillar": "security", "weight": 3, "critical": false, "text": "Access uses least-privilege identities and roles; no shared long-lived credentials."},
+    {"id": "sec-02", "pillar": "security", "weight": 3, "critical": false, "text": "Data is encrypted at rest and in transit with managed keys."},
+    {"id": "sec-03", "pillar": "security", "weight": 3, "critical": true, "text": "Threat detection and audit logging are enabled and centralized."},
+    {"id": "sec-04", "pillar": "security", "weight": 2, "critical": true, "text": "Incident response runbooks exist, with an owner and an alert route."},
+    {"id": "rel-01", "pillar": "reliability", "weight": 3, "critical": true, "text": "Automated backups cover every stateful component and restores are tested."},
+    {"id": "rel-02", "pillar": "reliability", "weight": 3, "critical": true, "text": "A disaster recovery plan defines RTO and RPO and is exercised."},
+    {"id": "rel-03", "pillar": "reliability", "weight": 2, "critical": false, "text": "Critical paths span multiple zones; no single point of failure."},
+    {"id": "ops-01", "pillar": "operations", "weight": 2, "critical": false, "text": "Infrastructure is defined as code and deployed through CI/CD."},
+    {"id": "ops-02", "pillar": "operations", "weight": 2, "critical": false, "text": "Metrics, logs and alerts cover each component with defined SLOs."},
+    {"id": "perf-01", "pillar": "performance", "weight": 2, "critical": false, "text": "Services are right-sized for the workload and reviewed periodically."},
+    {"id": "perf-02", "pillar": "performance", "weight": 1, "critical": false, "text": "Scaling and caching are used where load is variable or read-heavy."},
+    {"id": "cost-01", "pillar": "cost", "weight": 2, "critical": false, "text": "Resources are tagged and budgets with alerts exist per environment."},
+    {"id": "cost-02", "pillar": "cost", "weight": 1, "critical": false, "text": "Storage lifecycle and tiering policies remove unneeded data and compute."}
+  ]
+}

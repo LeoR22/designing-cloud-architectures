@@ -1,0 +1,61 @@
+{
+  "name": "Debt-collection analytics lakehouse",
+  "provider": "aws",
+  "groups": [
+    {"id": "sources", "label": "Sources"},
+    {"id": "ingestion", "label": "Ingestion"},
+    {"id": "lakehouse", "label": "Lakehouse"},
+    {"id": "ml", "label": "ML"},
+    {"id": "serving", "label": "Serving"},
+    {"id": "protection", "label": "Security and recovery"}
+  ],
+  "components": [
+    {"id": "crm", "label": "CRM", "service": "saas.crm", "group": "sources"},
+    {"id": "sms", "label": "SMS gateway", "service": "saas.sms", "group": "sources"},
+    {"id": "whatsapp", "label": "WhatsApp API", "service": "saas.whatsapp", "group": "sources"},
+    {"id": "aurora", "label": "Aurora", "service": "aws.aurora", "group": "sources"},
+    {"id": "files", "label": "Batch files", "service": "generic.files", "group": "sources"},
+
+    {"id": "appflow", "label": "AppFlow", "service": "aws.appflow", "group": "ingestion"},
+    {"id": "kinesis", "label": "Kinesis Firehose", "service": "aws.kinesis", "group": "ingestion"},
+    {"id": "dms", "label": "DMS", "service": "aws.dms", "group": "ingestion"},
+    {"id": "landing", "label": "S3 landing", "service": "aws.s3", "group": "ingestion"},
+
+    {"id": "bronze", "label": "Bronze (raw)", "service": "saas.databricks", "group": "lakehouse"},
+    {"id": "silver", "label": "Silver (clean)", "service": "saas.databricks", "group": "lakehouse"},
+    {"id": "gold", "label": "Gold (business)", "service": "saas.databricks", "group": "lakehouse"},
+
+    {"id": "features", "label": "Feature tables", "service": "saas.databricks", "group": "ml"},
+    {"id": "model", "label": "Propensity model", "service": "saas.databricks", "group": "ml"},
+
+    {"id": "writer", "label": "Score writer", "service": "aws.lambda", "group": "serving"},
+
+    {"id": "kms", "label": "KMS", "service": "aws.kms", "group": "protection"},
+    {"id": "cloudtrail", "label": "CloudTrail", "service": "aws.cloudtrail", "group": "protection"},
+    {"id": "guardduty", "label": "GuardDuty", "service": "aws.guardduty", "group": "protection"},
+    {"id": "securityhub", "label": "Security Hub", "service": "aws.securityhub", "group": "protection"},
+    {"id": "backup", "label": "AWS Backup", "service": "aws.backup", "group": "protection"}
+  ],
+  "connections": [
+    {"from": "crm", "to": "appflow", "label": "customers"},
+    {"from": "sms", "to": "kinesis", "label": "events"},
+    {"from": "whatsapp", "to": "kinesis", "label": "events"},
+    {"from": "aurora", "to": "dms", "label": "CDC"},
+    {"from": "files", "to": "landing", "label": "batch"},
+    {"from": "appflow", "to": "landing"},
+    {"from": "kinesis", "to": "landing"},
+    {"from": "dms", "to": "landing"},
+    {"from": "landing", "to": "bronze", "label": "auto loader"},
+    {"from": "bronze", "to": "silver", "label": "clean"},
+    {"from": "silver", "to": "gold", "label": "aggregate"},
+    {"from": "gold", "to": "features"},
+    {"from": "features", "to": "model", "label": "train"},
+    {"from": "model", "to": "writer", "label": "scores"},
+    {"from": "writer", "to": "crm", "label": "scores back"},
+    {"from": "kms", "to": "landing", "label": "encrypts"},
+    {"from": "cloudtrail", "to": "guardduty", "label": "logs"},
+    {"from": "guardduty", "to": "securityhub", "label": "findings"},
+    {"from": "landing", "to": "backup", "label": "snapshots"},
+    {"from": "aurora", "to": "backup", "label": "snapshots"}
+  ]
+}
