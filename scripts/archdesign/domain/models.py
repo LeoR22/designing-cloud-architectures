@@ -31,6 +31,11 @@ class Component:
     label: str
     service: str  # "<prefix>.<name>", e.g. "aws.s3", "gcp.bigquery", "saas.crm"
     group: str
+    # Resilience attributes (all optional).
+    stateful: bool = False  # holds data that cannot be rebuilt trivially
+    replicas: int = 1
+    quorum: bool = False  # replicas form a majority-quorum cluster
+    self_healing: bool = False  # the platform restores it without a person (managed multi-zone, auto-restart)
 
     @property
     def prefix(self) -> str:

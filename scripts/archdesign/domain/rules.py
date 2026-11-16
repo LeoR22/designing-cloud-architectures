@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 
+from . import resilience
 from .models import Architecture, Issue, Provider, Severity
 
 # Short labels keep boxes readable once the diagram is rendered.
@@ -93,4 +94,5 @@ def validate(arch: Architecture) -> list[Issue]:
         if g.id not in used_groups:
             issues.append(Issue("ARCH008", f"Group '{g.id}' has no components.", Severity.LOW))
 
+    issues.extend(resilience.check(arch))
     return sorted(issues, key=lambda i: _SEVERITY_ORDER[i.severity])
