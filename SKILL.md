@@ -16,14 +16,15 @@ Copy this checklist and tick it off:
 - [ ] 2. Pick services
 - [ ] 3. Write the architecture spec and validate it
 - [ ] 4. Render the diagram and inspect it
-- [ ] 5. Write the documentation
-- [ ] 6. Assess, remediate, re-assess
-- [ ] 7. Deliver
+- [ ] 5. Analyze failure modes
+- [ ] 6. Write the documentation
+- [ ] 7. Assess, remediate, re-assess
+- [ ] 8. Deliver
 ```
 
 **1. Clarify requirements.** Ask only for what is missing: business goal, provider (AWS, GCP, Azure or multi), data volume and latency needs, compliance constraints, environments. If the request already covers these, do not ask.
 
-**2. Pick services.** Read the file for the chosen provider: [AWS](reference/aws.md), [GCP](reference/gcp.md), [Azure](reference/azure.md). Prefer managed services, one service per responsibility. For multi-cloud, justify every cross-cloud link in an ADR. Third-party platforms use `saas.<name>` (for example `saas.databricks`).
+**2. Pick services.** Read the file for the chosen provider: [AWS](reference/aws.md), [GCP](reference/gcp.md), [Azure](reference/azure.md). Prefer managed services, one service per responsibility. Design so that nothing needs a person at night: each critical component heals itself or has redundancy to wait until the next business day. For multi-cloud, justify every cross-cloud link in an ADR. Third-party platforms use `saas.<name>` (for example `saas.databricks`).
 
 **3. Write the spec and validate.** Save `architecture.json` (format below; full example in [examples/debt-collection-lakehouse.json](examples/debt-collection-lakehouse.json)), then run:
 
@@ -42,13 +43,16 @@ python scripts/run.py diagram architecture.json --format mermaid   # Mermaid
 
 If `rsvg-convert` exists, convert the SVG to PNG and look at it. Shorten labels or split a crowded group if lines cross or text overflows.
 
-**5. Write the documentation.**
+**5. Analyze failure modes.** Read [reference/resilience.md](reference/resilience.md). For each critical component decide how it fails (transient or permanent), how it is detected, what recovers it automatically, and whether the manual fallback can wait until the next business day. Mark stateful components with `stateful`, `replicas`, `quorum` or `self_healing` in the spec, then validate again. Anything that cannot wait needs more redundancy, or an ADR accepting the risk.
+
+**6. Write the documentation.**
+- `docs/failure-modes.md` and a DR runbook, using the templates in [reference/resilience.md](reference/resilience.md).
 - One ADR per significant decision, using [reference/adr-template.md](reference/adr-template.md).
 - Inventory table per environment (Dev, QA, Prod): component, service, sizing, owner.
 - Three Mermaid sequence diagrams for the main flows.
 - Implementation guide: numbered steps, each with how to verify it.
 
-**6. Assess, remediate, re-assess.**
+**7. Assess, remediate, re-assess.**
 1. Answer each question in [reference/rubric.json](reference/rubric.json) with 0 (not implemented), 1 (partial) or 2 (full), citing evidence from the spec. Do not inflate answers. Save them as `answers-round1.json` (shape in [examples/answers-round1.json](examples/answers-round1.json)).
 2. Run:
    ```
@@ -58,7 +62,7 @@ If `rsvg-convert` exists, convert the SVG to PNG and look at it. Shorten labels 
 
 Users can extend the rubric with their own questions in the same JSON shape; set `"critical": true` on items whose absence is a high risk.
 
-**7. Deliver.** Send the files with a short summary: score before and after, high risks cleared, remaining gaps. State that the result is a self-assessment against this rubric, not an official provider audit.
+**8. Deliver.** Send the files with a short summary: score before and after, high risks cleared, remaining gaps. State that the result is a self-assessment against this rubric, not an official provider audit.
 
 ## Spec format
 
@@ -77,6 +81,7 @@ Users can extend the rubric with their own questions in the same JSON shape; set
 - Ids: letters, digits and underscores, starting with a letter.
 - `provider`: `aws`, `gcp`, `azure` or `multi`. Only `multi` allows services from more than one cloud.
 - `service`: `<prefix>.<name>` where prefix is `aws`, `gcp`, `azure`, `saas`, `onprem`, `generic` or `user`.
+- Optional resilience fields on a component: `"stateful"` (true/false), `"replicas"` (integer, default 1), `"quorum"` (replicas form a majority cluster), `"self_healing"` (the platform restores it without a person). Example: `{"stateful": true, "replicas": 5, "quorum": true}`.
 - Every component belongs to one declared group and has at least one connection. Labels up to 24 characters.
 - Groups become horizontal lanes and the flow reads left to right. Order groups by data flow: sources, ingestion, processing, serving, then security and recovery.
 
@@ -87,6 +92,7 @@ architecture/
 ├── architecture.json / .svg / .mmd
 ├── docs/adr/0001-<decision>.md
 ├── docs/inventory.md
+├── docs/failure-modes.md
 ├── docs/sequences.md
 ├── docs/implementation-guide.md
 └── assessment/answers-round1.json, report-round1.md, answers-round2.json, report-round2.md

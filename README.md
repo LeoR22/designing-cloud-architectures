@@ -4,6 +4,7 @@ An agent skill that designs cloud architectures on AWS, GCP, Azure or multi-clou
 
 - a validated architecture spec and a diagram (SVG and Mermaid)
 - ADRs, a Dev/QA/Prod inventory, sequence diagrams and an implementation guide
+- a failure-mode analysis (self-healing or redundancy, quorum math) enforced by validation rules
 - a scored well-architected self-assessment with remediation rounds
 
 The assessment is a self-evaluation against the bundled rubric, not an official provider audit.
@@ -12,7 +13,7 @@ The assessment is a self-evaluation against the bundled rubric, not an official 
 
 ```
 SKILL.md              instructions the agent loads when the skill applies
-reference/            provider service ids, ADR template, rubric, code architecture guide
+reference/            provider service ids, resilience guide, ADR template, rubric, code architecture guide
 examples/             sample spec and two assessment rounds
 scripts/archdesign/   Python code (clean architecture: domain, application, adapters, cli)
 tests/                unit tests, including a dependency-rule check
